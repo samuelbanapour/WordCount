@@ -43,7 +43,11 @@ npm start            # or: cd src && python3 -m http.server
 
 then open the printed URL (usually http://localhost:3000).
 
-**Publishing:** the included workflow (`.github/workflows/pages.yml`) deploys `src/` to GitHub Pages on every push to `main`. Turn it on once under *Settings → Pages → Source: GitHub Actions*.
+**Deploy to Render:** [![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/samuelbanapour/WordCount)
+
+The repo includes a [`render.yaml`](render.yaml) Blueprint that deploys `src/` as a free Render static site. It runs the tests first and redeploys on every push to `main`. Click the button above, or in Render choose *New + → Blueprint* and pick this repository.
+
+**GitHub Pages:** the included workflow (`.github/workflows/pages.yml`) deploys `src/` to GitHub Pages on every push to `main`. Turn it on once under *Settings → Pages → Source: GitHub Actions*.
 
 ## Installable app
 

@@ -1,0 +1,24 @@
+# Render Blueprint: deploys the web app as a free static site.
+# In Render: New + → Blueprint → pick this repository → Apply.
+# Every push to main redeploys automatically.
+services:
+  - type: web
+    name: wordcount
+    runtime: static
+    # No build step is needed; run the tests so a broken commit never goes live.
+    buildCommand: npm test
+    staticPublishPath: ./src
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+    headers:
+      # The service worker must always be re-checked so app updates reach users.
+      - path: /sw.js
+        name: Cache-Control
+        value: no-cache
+      - path: /manifest.webmanifest
+        name: Content-Type
+        value: application/manifest+json
+      - path: /*
+        name: X-Content-Type-Options
+        value: nosniff
