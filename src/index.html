@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Count words, characters, sentences and paragraphs instantly.">
+  <meta name="theme-color" content="#4f46e5">
+  <title>Word Count</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icon.svg">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="top">
+    <h1>Word Count</h1>
+    <button id="install" class="btn" hidden>Install app</button>
+  </header>
+
+  <main>
+    <section class="stats" aria-live="polite">
+      <div class="stat primary"><span id="words">0</span><label>Words</label></div>
+      <div class="stat"><span id="characters">0</span><label>Characters</label></div>
+      <div class="stat"><span id="charactersNoSpaces">0</span><label>No spaces</label></div>
+      <div class="stat"><span id="sentences">0</span><label>Sentences</label></div>
+      <div class="stat"><span id="paragraphs">0</span><label>Paragraphs</label></div>
+      <div class="stat"><span id="readingTime">0 min</span><label>Reading time</label></div>
+    </section>
+
+    <label for="text" class="visually-hidden">Your text</label>
+    <textarea id="text" placeholder="Type or paste your text here…" autofocus spellcheck="true"></textarea>
+
+    <div class="actions">
+      <button id="paste" class="btn">Paste</button>
+      <label class="btn">Open file<input id="file" type="file" accept=".txt,.md,text/*" hidden></label>
+      <button id="copy" class="btn">Copy</button>
+      <button id="clear" class="btn danger">Clear</button>
+      <span id="status" class="status" role="status"></span>
+    </div>
+
+    <details class="top-words">
+      <summary>Most used words (<span id="uniqueWords">0</span> unique)</summary>
+      <ol id="topWords"></ol>
+    </details>
+  </main>
+
+  <footer>Your text never leaves your device. Works offline.</footer>
+
+  <script src="wordcount.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

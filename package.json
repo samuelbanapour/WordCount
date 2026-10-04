@@ -1,0 +1,13 @@
+{
+  "name": "wordcount",
+  "version": "1.0.0",
+  "description": "Count words, characters, sentences and paragraphs, on the web, as an installable app, or from the command line.",
+  "license": "MIT",
+  "main": "src/wordcount.js",
+  "bin": { "wordcount": "bin/wordcount.js" },
+  "scripts": {
+    "start": "npx --yes serve src",
+    "test": "node --test"
+  },
+  "engines": { "node": ">=18" }
+}
