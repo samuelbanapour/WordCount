@@ -1,6 +1,6 @@
 # Word Count
 
-Count words, characters, sentences and paragraphs. Use it as a **website**, install it as an **app** (desktop or phone), or run it from the **command line**.
+Count words, characters, sentences and paragraphs, and find better words with the built-in **thesaurus**. Use it as a **website**, install it as an **app** (desktop or phone), or run it from the **command line**.
 
 Counting follows the Unicode standard, [UAX #29: Unicode Text Segmentation](https://www.unicode.org/reports/tr29/), so it works for any language:
 
@@ -13,6 +13,23 @@ Counting follows the Unicode standard, [UAX #29: Unicode Text Segmentation](http
 | Lines / paragraphs | All Unicode line terminators, including `U+2028` LINE SEPARATOR and `U+2029` PARAGRAPH SEPARATOR. |
 
 Text is normalized to NFC first, so composed and decomposed forms of the same word are treated as equal. Under UAX #29, contractions (`don't`) and numbers (`2.5`, `1,000`) are one word, and hyphenated words (`well-known`) are two.
+
+## Thesaurus
+
+Select a word in your text (double-click it) and the thesaurus panel shows its meanings, most common first, each with a short definition, **synonyms** and **opposites**. Click a synonym to replace the selected word (capitalization is kept: `Happy` → `Cheerful`), or keep clicking to try others. You can also type any word into the search box; clicking a result then copies it.
+
+- Inflected forms are understood: `ran` → *run*, `happier` → *happy*, `children` → *child*, `said` → *said* and *say*.
+- 54,000+ words and phrases from [WordNet 3.1](https://wordnet.princeton.edu/) (Princeton University), stored in `src/thesaurus.json`.
+- Fully offline and private: the data (about 1.6 MB compressed) downloads the first time you use the thesaurus and is then cached by the app. No word you look up is sent anywhere.
+
+The data file is generated, not hand-edited. To rebuild it:
+
+```sh
+npm install
+npm run build:thesaurus
+```
+
+WordNet license: [`src/WORDNET-LICENSE.txt`](src/WORDNET-LICENSE.txt).
 
 ## Web app
 
@@ -38,6 +55,7 @@ The site is a Progressive Web App. Open it in Chrome/Edge and click **Install ap
 node bin/wordcount.js essay.txt          # one or more files
 echo "Hello world" | node bin/wordcount.js
 node bin/wordcount.js --json essay.txt   # machine-readable output
+node bin/wordcount.js --thesaurus happy  # synonyms and opposites (-t for short)
 npm install -g . && wordcount essay.txt  # install the `wordcount` command
 ```
 
@@ -47,6 +65,9 @@ npm install -g . && wordcount essay.txt  # install the `wordcount` command
 const { countWords, analyze } = require("./src/wordcount.js");
 countWords("Hello, world!");   // 2
 analyze("Hi there. Bye!");     // { words: 3, characters: 14, sentences: 2, ... }
+
+const thesaurus = require("./src/thesaurus.js").create(require("./src/thesaurus.json"));
+thesaurus.lookup("ran");       // { query: "ran", matches: [{ word: "run", senses: [{ partOfSpeech, definition, synonyms, antonyms }, ...] }] }
 ```
 
 ## Tests

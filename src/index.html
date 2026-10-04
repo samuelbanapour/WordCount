@@ -28,26 +28,44 @@
       <div class="stat"><span id="readingTime">0 min</span><label>Reading time</label></div>
     </section>
 
-    <label for="text" class="visually-hidden">Your text</label>
-    <textarea id="text" placeholder="Type or paste your text here…" autofocus spellcheck="true"></textarea>
+    <div class="workspace">
+      <div class="editor">
+        <label for="text" class="visually-hidden">Your text</label>
+        <textarea id="text" placeholder="Type or paste your text here…" autofocus spellcheck="true"></textarea>
 
-    <div class="actions">
-      <button id="paste" class="btn">Paste</button>
-      <label class="btn">Open file<input id="file" type="file" accept=".txt,.md,text/*" hidden></label>
-      <button id="copy" class="btn">Copy</button>
-      <button id="clear" class="btn danger">Clear</button>
-      <span id="status" class="status" role="status"></span>
+        <div class="actions">
+          <button id="paste" class="btn">Paste</button>
+          <label class="btn">Open file<input id="file" type="file" accept=".txt,.md,text/*" hidden></label>
+          <button id="copy" class="btn">Copy</button>
+          <button id="clear" class="btn danger">Clear</button>
+          <span id="status" class="status" role="status"></span>
+        </div>
+
+        <details class="top-words">
+          <summary>Most used words (<span id="uniqueWords">0</span> unique)</summary>
+          <ol id="topWords"></ol>
+        </details>
+      </div>
+
+      <aside class="thesaurus" aria-labelledby="thesaurus-title">
+        <h2 id="thesaurus-title">Thesaurus</h2>
+        <form id="lookup-form" class="lookup" role="search">
+          <label for="lookup" class="visually-hidden">Word to look up</label>
+          <input id="lookup" type="search" placeholder="Find synonyms…" autocomplete="off" autocapitalize="off" spellcheck="false">
+          <button class="btn primary" type="submit">Look up</button>
+        </form>
+        <div id="thesaurus-results" class="results" aria-live="polite">
+          <p class="hint">Select a word in your text to see synonyms, then click one to replace it.</p>
+        </div>
+        <p class="credit">Synonyms from <a href="https://wordnet.princeton.edu/" target="_blank" rel="noopener">WordNet</a>, Princeton University (<a href="WORDNET-LICENSE.txt" target="_blank">license</a>).</p>
+      </aside>
     </div>
-
-    <details class="top-words">
-      <summary>Most used words (<span id="uniqueWords">0</span> unique)</summary>
-      <ol id="topWords"></ol>
-    </details>
   </main>
 
-  <footer>Your text never leaves your device. Works offline.</footer>
+  <footer>Your text never leaves your device. Works offline, including the thesaurus.</footer>
 
   <script src="wordcount.js"></script>
+  <script src="thesaurus.js"></script>
   <script src="app.js"></script>
 </body>
 </html>
