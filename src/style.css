@@ -54,7 +54,7 @@ main { flex: 1; display: flex; flex-direction: column; gap: 16px; padding-top: 1
 
 .stats {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  grid-template-columns: repeat(7, 1fr);
   gap: 10px;
 }
 
@@ -71,6 +71,11 @@ main { flex: 1; display: flex; flex-direction: column; gap: 16px; padding-top: 1
 .stat label { color: var(--muted); font-size: 0.85rem; }
 .stat.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-text); }
 .stat.primary label { color: inherit; opacity: 0.85; }
+
+@media (max-width: 860px) {
+  .stats { grid-template-columns: repeat(2, 1fr); }
+  .stat.primary { grid-column: span 2; }
+}
 
 textarea {
   width: 100%;

@@ -15,7 +15,7 @@
   function render() {
     const text = textarea.value;
     const s = WordCount.analyze(text);
-    for (const key of ["words", "characters", "charactersNoSpaces", "sentences", "paragraphs", "uniqueWords"]) {
+    for (const key of ["words", "characters", "charactersNoSpaces", "emoji", "sentences", "paragraphs", "uniqueWords"]) {
       $(key).textContent = fmt.format(s[key]);
     }
     $("readingTime").textContent = s.readingTimeMinutes + " min";

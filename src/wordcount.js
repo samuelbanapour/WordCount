@@ -4,7 +4,9 @@
  *
  * All counting follows the Unicode standard, UAX #29 "Unicode Text Segmentation"
  * (https://www.unicode.org/reports/tr29/), via the built-in `Intl.Segmenter`:
- *   - words      = word-boundary segments that are word-like (letters, numbers, ideographs…)
+ *   - words      = word-boundary segments that are word-like (letters, numbers, ideographs…);
+ *                  emoji are never words
+ *   - emoji      = grapheme clusters that are emoji (they still count as characters)
  *   - characters = extended grapheme clusters (what a reader perceives as one character)
  *   - sentences  = sentence-boundary segments that contain at least one word
  * Environments without `Intl.Segmenter` fall back to Unicode property regexes.
@@ -32,12 +34,35 @@
   // Fallbacks approximating UAX #29 with Unicode properties.
   // Letters, marks and numbers, joined by the "MidLetter/MidNum" characters (' ’ . , etc.).
   const WORD_RE = /[\p{L}\p{M}\p{N}\p{Pc}]+(?:['’.,:·][\p{L}\p{M}\p{N}\p{Pc}]+)*/gu;
-  // A base character followed by combining marks, variation selectors and ZWJ sequences.
-  const GRAPHEME_RE = /\P{M}\p{M}*(?:\u200D\P{M}\p{M}*)*[\u{FE00}-\u{FE0F}\u{1F3FB}-\u{1F3FF}]*/gu;
+  // An extended grapheme cluster: a base (CRLF, a flag's regional-indicator pair, or any character)
+  // plus combining marks, variation selectors, emoji skin-tone modifiers and tag characters,
+  // optionally chained with ZERO WIDTH JOINER (emoji ZWJ sequences such as 👨‍👩‍👧).
+  const GRAPHEME_RE = new RegExp(
+    String.raw`(?:\r\n|\p{RI}\p{RI}|[^])[\p{M}\u{1F3FB}-\u{1F3FF}\u{E0020}-\u{E007F}]*` +
+      String.raw`(?:‍(?:\p{RI}\p{RI}|[^])[\p{M}\u{1F3FB}-\u{1F3FF}\u{E0020}-\u{E007F}]*)*`,
+    "gu"
+  );
+  // A grapheme cluster is an emoji if it contains a pictographic character, a flag letter,
+  // a keycap (1️⃣) or the emoji presentation selector U+FE0F.
+  const EMOJI_RE = /\p{Extended_Pictographic}|\p{Regional_Indicator}|⃣|️/u;
 
-  /** Return the list of words in `text` (Unicode word boundaries). */
+  /** Split `text` into user-perceived characters (Unicode extended grapheme clusters). */
+  function graphemes(text) {
+    if (!text) return [];
+    if (segmenters) return Array.from(segmenters.grapheme.segment(text), (s) => s.segment);
+    return text.match(GRAPHEME_RE) || [];
+  }
+
+  /** Replace every emoji with a space, so emoji count as characters but never as (part of) words. */
+  function withoutEmoji(text) {
+    if (!EMOJI_RE.test(text)) return text;
+    return graphemes(text).map((g) => (EMOJI_RE.test(g) ? " " : g)).join("");
+  }
+
+  /** Return the list of words in `text` (Unicode word boundaries, ignoring emoji). */
   function words(text) {
     if (!text) return [];
+    text = withoutEmoji(text);
     if (segmenters) {
       const out = [];
       for (const seg of segmenters.word.segment(text)) {
@@ -53,15 +78,14 @@
     return words(text).length;
   }
 
-  /** Count user-perceived characters (Unicode extended grapheme clusters). */
+  /** Count user-perceived characters (Unicode extended grapheme clusters); each emoji is one. */
   function countCharacters(text) {
-    if (!text) return 0;
-    if (segmenters) {
-      let n = 0;
-      for (const _ of segmenters.grapheme.segment(text)) n++;
-      return n;
-    }
-    return (text.match(GRAPHEME_RE) || []).length;
+    return graphemes(text).length;
+  }
+
+  /** Count the emoji in `text`. */
+  function countEmoji(text) {
+    return graphemes(text).filter((g) => EMOJI_RE.test(g)).length;
   }
 
   /** Count sentences (Unicode sentence boundaries) that contain at least one word. */
@@ -100,6 +124,7 @@
       words: wordCount,
       uniqueWords: frequency.size,
       characters: countCharacters(text),
+      emoji: countEmoji(text),
       charactersNoSpaces: countCharacters(text.replace(/\s/gu, "")),
       sentences: countSentences(text),
       paragraphs: countParagraphs(text),
@@ -109,5 +134,5 @@
     };
   }
 
-  return { words, countWords, countCharacters, analyze, WORDS_PER_MINUTE };
+  return { words, countWords, countCharacters, countEmoji, analyze, WORDS_PER_MINUTE };
 });

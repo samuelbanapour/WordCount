@@ -2,13 +2,13 @@
 
 const test = require("node:test");
 const assert = require("node:assert/strict");
-const { words, countWords, countCharacters, analyze } = require("../src/wordcount.js");
+const { words, countWords, countCharacters, countEmoji, analyze } = require("../src/wordcount.js");
 
 test("empty and whitespace-only text has zero words", () => {
   assert.equal(countWords(""), 0);
   assert.equal(countWords("   \n\t \u3000"), 0);
   assert.deepEqual(analyze(""), {
-    words: 0, uniqueWords: 0, characters: 0, charactersNoSpaces: 0,
+    words: 0, uniqueWords: 0, characters: 0, emoji: 0, charactersNoSpaces: 0,
     sentences: 0, paragraphs: 0, lines: 0, readingTimeMinutes: 0, topWords: [],
   });
 });
@@ -48,6 +48,44 @@ test("characters are grapheme clusters", () => {
   assert.equal(countCharacters("🇺🇸"), 1); // flag (regional indicator pair)
   assert.equal(countCharacters("e\u0301"), 1); // e + combining acute accent
   assert.equal(analyze("hi 👋").charactersNoSpaces, 3);
+});
+
+const EMOJI = ["👋", "😀", "👨‍👩‍👧", "👍🏽", "🧑🏽‍💻", "🏳️‍🌈", "🇺🇸", "🏴\u{E0067}\u{E0062}\u{E0073}\u{E0063}\u{E0074}\u{E007F}",
+  "1️⃣", "#️⃣", "🔟", "❤️", "©️", "™", "🅰️", "Ⓜ️"];
+
+function emojiCases() {
+  for (const e of EMOJI) {
+    assert.equal(countWords(e), 0, `${e} is not a word`);
+    assert.equal(countCharacters(e), 1, `${e} is one character`);
+    assert.equal(countEmoji(e), 1, `${e} is one emoji`);
+  }
+  assert.deepEqual(words("I ❤️ NY 🗽!"), ["I", "NY"]);
+  assert.deepEqual(words("hi👋there"), ["hi", "there"]);
+  assert.deepEqual(words("Score: 1️⃣0️⃣ pts"), ["Score", "pts"]);
+  const s = analyze("Good morning ☀️😀 see you 👋");
+  assert.equal(s.words, 4);
+  assert.equal(s.emoji, 3);
+  assert.equal(s.characters, 25);
+}
+
+test("emoji count as characters, never as words", emojiCases);
+
+test("emoji handling is the same without Intl.Segmenter", () => {
+  const saved = Intl.Segmenter;
+  const modPath = require.resolve("../src/wordcount.js");
+  delete require.cache[modPath];
+  delete Intl.Segmenter;
+  try {
+    const fallback = require(modPath);
+    for (const e of EMOJI) {
+      assert.equal(fallback.countWords(e), 0, `${e} is not a word`);
+      assert.equal(fallback.countCharacters(e), 1, `${e} is one character`);
+    }
+    assert.deepEqual(fallback.words("I ❤️ NY 🗽!"), ["I", "NY"]);
+  } finally {
+    Intl.Segmenter = saved;
+    delete require.cache[modPath];
+  }
 });
 
 test("full statistics", () => {

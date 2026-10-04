@@ -1,5 +1,5 @@
 // Service worker: caches the app so it works offline once installed.
-const CACHE = "wordcount-v1";
+const CACHE = "wordcount-v2";
 const ASSETS = ["./", "index.html", "style.css", "app.js", "wordcount.js", "manifest.webmanifest", "icon.svg"];
 
 self.addEventListener("install", (event) => {

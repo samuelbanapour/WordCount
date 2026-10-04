@@ -20,6 +20,7 @@ function report(label, stats) {
     `Unique words:       ${stats.uniqueWords}`,
     `Characters:         ${stats.characters}`,
     `Characters (no sp): ${stats.charactersNoSpaces}`,
+    `Emoji:              ${stats.emoji}`,
     `Sentences:          ${stats.sentences}`,
     `Paragraphs:         ${stats.paragraphs}`,
     `Reading time:       ${stats.readingTimeMinutes} min`,

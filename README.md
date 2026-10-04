@@ -6,8 +6,9 @@ Counting follows the Unicode standard, [UAX #29: Unicode Text Segmentation](http
 
 | Statistic   | Unicode rule |
 |-------------|--------------|
-| Words       | Word boundaries, counting only word-like segments (letters, numbers, ideographs). Chinese, Japanese, Thai and other languages written without spaces are split into real words. |
+| Words       | Word boundaries, counting only word-like segments (letters, numbers, ideographs). Chinese, Japanese, Thai and other languages written without spaces are split into real words. **Emoji are never words**, including keycaps like `1️⃣` and letter emoji like `🅰️`. |
 | Characters  | Extended grapheme clusters, so `👨‍👩‍👧`, `🇺🇸` or `é` (even when typed as `e` + accent) each count as **one** character. |
+| Emoji       | Grapheme clusters containing an `Extended_Pictographic` character, a flag (regional indicators), a keycap (`U+20E3`) or the emoji presentation selector (`U+FE0F`). Each emoji counts as one character. |
 | Sentences   | Sentence boundaries that contain at least one word. |
 | Lines / paragraphs | All Unicode line terminators, including `U+2028` LINE SEPARATOR and `U+2029` PARAGRAPH SEPARATOR. |
 
